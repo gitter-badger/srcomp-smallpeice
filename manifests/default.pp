@@ -19,12 +19,12 @@ node "srcomp" {
         managehome => true
     }
 
-    vcsrepo { "/home/competition/srcomp-http":
-        ensure   => present,
-        source   => "${git_root}/comp/srcomp-http.git",
-        user     => 'competition',
-        revision => 'master',
-        require  => User['competition']
+    class { 'api':
+        user    => 'competition',
+        root    => '/home/competition/srcomp-http',
+        port    => 1100,
+        state_path => '/tmp/state',
+        require => User['competition']
     }
 
     vcsrepo { "/home/competition/srcomp-screens":
@@ -33,15 +33,6 @@ node "srcomp" {
         user     => 'competition',
         revision => 'master',
         require  => User['competition']
-    }
-
-    package { ['python-flask',
-               'python-dateutil',
-               'python-nose',
-               'python-yaml',
-               'python-simplejson']:
-        ensure => latest,
-        before => Notify['ready']
     }
 
     class { 'nginx':
@@ -60,10 +51,6 @@ node "srcomp" {
         vhost => $fqdn,
         proxy => 'http://api/',
         location => '/comp-api/'
-    }
-
-    notify { "ready":
-        message => "Ready to run"
     }
 }
 

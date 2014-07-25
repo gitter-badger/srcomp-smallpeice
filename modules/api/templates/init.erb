@@ -1,0 +1,70 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:        comp-api
+# Required-Start:  $local_fs $network $named $time $syslog
+# Required-Stop:   $local_fs $network $named $time $syslog
+# Default-Start:   2 3 4 5
+# Default-Stop:    0 1 6
+# Description:     Competition API service
+### END INIT INFO
+
+RUNAS=<%= @user %>
+
+start() {
+    if [ -f /var/run/comp-api.pid ] && kill -0 $(cat /var/run/comp-api.pid); then
+        echo 'Competition API already running' >&2
+        return 1
+    fi
+    echo 'Starting API...' >&2
+    local CMD='cd <%= @root %>; /usr/bin/python app.py -p <%= @port %> --no-reloader <%= @state_path %> >/dev/null & echo $!' 
+    su -c "$CMD" $RUNAS > /var/run/comp-api.pid
+    echo 'Started!' >&2
+}
+
+stop() {
+    if [ ! -f /var/run/comp-api.pid ] || ! kill -0 $(cat /var/run/comp-api.pid); then
+        echo 'Competition API not running' >&2
+        return 1
+    fi
+    echo 'Stopping API...' >&2
+    kill -TERM $(cat /var/run/comp-api.pid) && rm -f /var/run/comp-api.pid
+    echo 'Stopped.' >&2
+}
+
+status() {
+    if [ -f /var/run/comp-api.pid ]; then
+        if kill -0 $(cat /var/run/comp-api.pid); then
+            echo 'API is active.' >&2
+            return 0
+        else
+            echo 'API is a zombie.' >&2
+            return 1
+        fi
+    else
+        echo 'API is not active.' >&2
+        return 3
+    fi
+}
+
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  status)
+    status
+    ;;
+  restart)
+    stop
+    start
+    ;;
+  force-reload)
+    stop
+    start
+    ;;
+  *)
+    echo "Usage: $0 (start|stop|restart|status|force-reload)"
+esac
+
