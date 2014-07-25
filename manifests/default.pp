@@ -4,12 +4,12 @@ node "srcomp" {
     }
 
     VCSRepo {
-        require => Package['git']
+        require => Package['git'],
+        provider => git
     }
 
     vcsrepo { "/root/test.git":
-        ensure => bare,
-        provider => git
+        ensure => bare
     }
 }
 
