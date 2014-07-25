@@ -68,7 +68,8 @@ node "srcomp" {
     nginx::resource::location { 'scorer':
         vhost => $fqdn,
         proxy => 'http://scorer/',
-        location => '/scorer/'
+        location => '/scorer/',
+        proxy_set_header => ['X-Script-Name /scorer']
     }
 }
 
