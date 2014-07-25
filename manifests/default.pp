@@ -47,6 +47,21 @@ node "srcomp" {
     class { 'nginx':
     }
 
+    nginx::resource::vhost { $fqdn:
+        www_root => '/home/competition/srcomp-screens',
+        require => VCSRepo['/home/competition/srcomp-screens']
+    }
+
+    nginx::resource::upstream { 'api':
+        members => ['localhost:1100']
+    }
+
+    nginx::resource::location { 'api':
+        vhost => $fqdn,
+        proxy => 'http://api/',
+        location => '/comp-api/'
+    }
+
     notify { "ready":
         message => "Ready to run"
     }
