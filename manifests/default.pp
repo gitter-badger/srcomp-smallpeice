@@ -19,13 +19,20 @@ node "srcomp" {
         managehome => true
     }
 
+
+    vcsrepo { "/home/competition/state":
+        ensure   => present,
+        source   => "${git_root}/comp/dummy-comp.git",
+        user     => 'competition',
+        revision => 'master',
+        require  => User['competition']
+    } ->
     class { 'api':
         user    => 'competition',
         root    => '/home/competition',
         port    => 1100,
         port_scorer => 1101,
-        state_path => '/tmp/state',
-        require => User['competition']
+        state_path => '/home/competition/state'
     }
 
     vcsrepo { "/home/competition/srcomp-screens":
