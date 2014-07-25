@@ -4,7 +4,7 @@ class api($root,
           $state_path) {
     $git_root = extlookup('git_root')
 
-    vcsrepo { $root:
+    vcsrepo { "$root/srcomp-http":
         ensure   => present,
         source   => "${git_root}/comp/srcomp-http.git",
         user     => $user,

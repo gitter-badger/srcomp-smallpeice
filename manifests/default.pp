@@ -21,7 +21,7 @@ node "srcomp" {
 
     class { 'api':
         user    => 'competition',
-        root    => '/home/competition/srcomp-http',
+        root    => '/home/competition',
         port    => 1100,
         state_path => '/tmp/state',
         require => User['competition']
