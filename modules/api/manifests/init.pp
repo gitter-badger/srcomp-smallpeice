@@ -1,6 +1,7 @@
 class api($root,
           $user,
           $port,
+          $port_scorer,
           $state_path) {
     $git_root = extlookup('git_root')
 
@@ -36,6 +37,13 @@ class api($root,
         before  => Service['comp-api']
     }
 
+    file { '/etc/init.d/comp-scorer':
+        ensure  => file,
+        content => template('api/init_scorer.erb'),
+        mode    => '0755',
+        before  => Service['comp-scorer']
+    }
+
     file { '/etc/comp-api-wsgi':
         ensure  => file,
         content => template('api/wsgi_config.erb'),
@@ -44,6 +52,11 @@ class api($root,
 
     service { 'comp-api':
         ensure  => running
+    }
+
+    service { 'comp-scorer':
+        ensure  => running,
+        require => Service['comp-api']
     }
 }
 

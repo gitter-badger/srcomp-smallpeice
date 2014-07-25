@@ -23,6 +23,7 @@ node "srcomp" {
         user    => 'competition',
         root    => '/home/competition',
         port    => 1100,
+        port_scorer => 1101,
         state_path => '/tmp/state',
         require => User['competition']
     }
@@ -51,6 +52,16 @@ node "srcomp" {
         vhost => $fqdn,
         proxy => 'http://api/',
         location => '/comp-api/'
+    }
+
+    nginx::resource::upstream { 'scorer':
+        members => ['localhost:1101']
+    }
+
+    nginx::resource::location { 'scorer':
+        vhost => $fqdn,
+        proxy => 'http://scorer/',
+        location => '/scorer/'
     }
 }
 
