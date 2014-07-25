@@ -44,6 +44,9 @@ node "srcomp" {
         before => Notify['ready']
     }
 
+    class { 'nginx':
+    }
+
     notify { "ready":
         message => "Ready to run"
     }
