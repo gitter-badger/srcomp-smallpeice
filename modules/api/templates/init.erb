@@ -17,8 +17,8 @@ start() {
         return 1
     fi
     echo 'Starting API...' >&2
-    local CMD='cd <%= @root %>/srcomp-http; /usr/bin/python app.py -p <%= @port %> --no-reloader <%= @state_path %> >/dev/null & echo $!' 
-    su -c "$CMD" $RUNAS > $PIDFILE
+    cd <%= @root %>/srcomp-http
+    gunicorn -c /etc/comp-api-wsgi -b '[::1]:<%= @port %>' -p $PIDFILE -u $RUNAS -D app:app
     echo 'Started!' >&2
 }
 

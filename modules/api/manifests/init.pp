@@ -12,11 +12,19 @@ class api($root,
         before   => Service['comp-api']
     }
 
+    vcsrepo { "$root/srcomp-scorer":
+        ensure   => present,
+        source   => 'https://github.com/tomleese/srcomp-scorer.git',
+        user     => $user,
+        revision => 'master'
+    }
+
     package { ['python-flask',
                'python-dateutil',
                'python-nose',
                'python-yaml',
-               'python-simplejson']:
+               'python-simplejson',
+               'gunicorn']:
         ensure => latest,
         before => Service['comp-api']
     }
@@ -24,12 +32,18 @@ class api($root,
     file { '/etc/init.d/comp-api':
         ensure  => file,
         content => template('api/init.erb'),
-        mode    => '0755'
+        mode    => '0755',
+        before  => Service['comp-api']
+    }
+
+    file { '/etc/comp-api-wsgi':
+        ensure  => file,
+        content => template('api/wsgi_config.erb'),
+        before  => Service['comp-api']
     }
 
     service { 'comp-api':
-        ensure  => running,
-        require => File['/etc/init.d/comp-api']
+        ensure  => running
     }
 }
 
