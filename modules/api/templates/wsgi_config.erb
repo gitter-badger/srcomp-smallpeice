@@ -1,6 +1,7 @@
 from app import app
 
 app.config['COMPSTATE'] = '<%= @state_path %>'
+app.config['COMPSTATE_LOCAL'] = True
 
 # Since it's generating URLs, we use the reverse proxy trick
 # courtesy Peter Hansen
