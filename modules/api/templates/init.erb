@@ -9,31 +9,32 @@
 ### END INIT INFO
 
 RUNAS=<%= @user %>
+PIDFILE=/var/run/comp-api.pid
 
 start() {
-    if [ -f /var/run/comp-api.pid ] && kill -0 $(cat /var/run/comp-api.pid); then
+    if [ -f $PIDFILE ] && kill -0 $(cat $PIDFILE); then
         echo 'Competition API already running' >&2
         return 1
     fi
     echo 'Starting API...' >&2
-    local CMD='cd <%= @root %>; /usr/bin/python app.py -p <%= @port %> --no-reloader <%= @state_path %> >/dev/null & echo $!' 
-    su -c "$CMD" $RUNAS > /var/run/comp-api.pid
+    local CMD='cd <%= @root %>/srcomp-http; /usr/bin/python app.py -p <%= @port %> --no-reloader <%= @state_path %> >/dev/null & echo $!' 
+    su -c "$CMD" $RUNAS > $PIDFILE
     echo 'Started!' >&2
 }
 
 stop() {
-    if [ ! -f /var/run/comp-api.pid ] || ! kill -0 $(cat /var/run/comp-api.pid); then
+    if [ ! -f $PIDFILE ] || ! kill -0 $(cat $PIDFILE); then
         echo 'Competition API not running' >&2
         return 1
     fi
     echo 'Stopping API...' >&2
-    kill -TERM $(cat /var/run/comp-api.pid) && rm -f /var/run/comp-api.pid
+    kill -TERM $(cat $PIDFILE) && rm -f $PIDFILE
     echo 'Stopped.' >&2
 }
 
 status() {
-    if [ -f /var/run/comp-api.pid ]; then
-        if kill -0 $(cat /var/run/comp-api.pid); then
+    if [ -f $PIDFILE ]; then
+        if kill -0 $(cat $PIDFILE); then
             echo 'API is active.' >&2
             return 0
         else
