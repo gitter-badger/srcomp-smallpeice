@@ -10,5 +10,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.synced_folder "files/", "/etc/boxconf"
+
+  config.vm.network "forwarded_port", guest: 80, host: 8080
 end
 
