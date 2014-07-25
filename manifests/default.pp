@@ -6,17 +6,25 @@ node "srcomp" {
         ensure => latest
     }
 
+    $git_root = extlookup('git_root')
+
     VCSRepo {
         require => Package['git'],
         provider => git
     }
 
-    vcsrepo { "/root/test.git":
-        ensure => bare
+    user { 'competition':
+        ensure => present,
+        home => '/home/competition',
+        managehome => true
     }
 
-    notify { 'eyes':
-        message => extlookup('notification')
+    vcsrepo { "/home/competition/test":
+        ensure   => present,
+        source   => "${git_root}/test.git",
+        user     => 'competition',
+        revision => 'master',
+        require  => User['competition']
     }
 }
 
