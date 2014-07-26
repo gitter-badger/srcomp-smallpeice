@@ -42,6 +42,7 @@ node "srcomp" {
     }
 
     class { 'nginx':
+        proxy_cache_path => '/tmp/www-cache'
     }
 
     $vhost = $fqdn
@@ -55,10 +56,16 @@ node "srcomp" {
         members => ['unix:/var/run/comp-api.sock']
     }
 
+    Nginx::Resource::Location {
+        proxy_cache => 'd2',
+        proxy_cache_valid => '5m'
+    }
+
     nginx::resource::location { 'api':
         vhost => $vhost,
         proxy => 'http://api/',
-        location => '/comp-api/'
+        location => '/comp-api/',
+        proxy_set_header => ['X-Script-Name /comp-api']
     }
 
     nginx::resource::upstream { 'scorer':
