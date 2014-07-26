@@ -44,7 +44,9 @@ node "srcomp" {
     class { 'nginx':
     }
 
-    nginx::resource::vhost { $fqdn:
+    $vhost = $fqdn
+
+    nginx::resource::vhost { $vhost:
         www_root => '/home/competition/srcomp-screens',
         require => VCSRepo['/home/competition/srcomp-screens']
     }
@@ -54,7 +56,7 @@ node "srcomp" {
     }
 
     nginx::resource::location { 'api':
-        vhost => $fqdn,
+        vhost => $vhost,
         proxy => 'http://api/',
         location => '/comp-api/'
     }
@@ -64,7 +66,7 @@ node "srcomp" {
     }
 
     nginx::resource::location { 'scorer':
-        vhost => $fqdn,
+        vhost => $vhost,
         proxy => 'http://scorer/',
         location => '/scorer/',
         proxy_set_header => ['X-Script-Name /scorer']
