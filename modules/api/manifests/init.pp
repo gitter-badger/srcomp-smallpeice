@@ -3,21 +3,20 @@ class api($root,
           $port,
           $port_scorer,
           $state_path) {
-    $git_root = extlookup('git_root')
 
     vcsrepo { "$root/srcomp-http":
         ensure   => present,
-        source   => "${git_root}/comp/srcomp-http.git",
+        source   => extlookup('repo_http_uri'),
         user     => $user,
-        revision => 'master',
+        revision => extlookup('repo_http_branch'),
         before   => Service['comp-api']
     }
 
     vcsrepo { "$root/srcomp-scorer":
         ensure   => present,
-        source   => 'https://github.com/tomleese/srcomp-scorer.git',
+        source   => extlookup('repo_scorer_uri'),
         user     => $user,
-        revision => 'master'
+        revision => extlookup('repo_scorer_branch')
     }
 
     package { ['python-flask',

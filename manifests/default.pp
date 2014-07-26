@@ -1,12 +1,10 @@
 $extlookup_datadir = '/etc/boxconf'
-$extlookup_precedence = ['common']
+$extlookup_precedence = ['git_repos', 'common']
 
 node "srcomp" {
     package { "git":
         ensure => latest
     }
-
-    $git_root = extlookup('git_root')
 
     VCSRepo {
         require => Package['git'],
@@ -22,11 +20,11 @@ node "srcomp" {
 
     vcsrepo { "/home/competition/state":
         ensure   => present,
-        source   => "${git_root}/comp/dummy-comp.git",
+        source   => extlookup('repo_state_uri'),
         user     => 'competition',
-        revision => 'master',
+        revision => extlookup('repo_state_branch'),
         require  => User['competition']
-    } ->
+    } ~>
     class { 'api':
         user    => 'competition',
         root    => '/home/competition',
@@ -37,9 +35,9 @@ node "srcomp" {
 
     vcsrepo { "/home/competition/srcomp-screens":
         ensure   => present,
-        source   => "${git_root}/comp/srcomp-screens.git",
+        source   => extlookup('repo_screens_uri'),
         user     => 'competition',
-        revision => 'master',
+        revision => extlookup('repo_screens_branch'),
         require  => User['competition']
     }
 

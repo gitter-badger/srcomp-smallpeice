@@ -1,0 +1,9 @@
+repo_state_uri,git://git.studentrobotics.org/comp/dummy-comp.git
+repo_state_branch,master
+repo_screens_uri,git://git.studentrobotics.org/comp/srcomp-screens.git
+repo_screens_branch,master
+repo_http_uri,git://git.studentrobotics.org/comp/srcomp-http.git
+repo_http_branch,master
+repo_scorer_uri,https://github.com/tomleese/srcomp-scorer.git
+repo_scorer_branch,master
+
