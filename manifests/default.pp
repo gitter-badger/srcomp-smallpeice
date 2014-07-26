@@ -28,8 +28,8 @@ node "srcomp" {
     class { 'api':
         user    => 'competition',
         root    => '/home/competition',
-        port    => 1100,
-        port_scorer => 1101,
+        socket_api    => '/var/run/comp-api.sock',
+        socket_scorer => '/var/run/comp-scorer.sock',
         state_path => '/home/competition/state'
     }
 
@@ -50,7 +50,7 @@ node "srcomp" {
     }
 
     nginx::resource::upstream { 'api':
-        members => ['localhost:1100']
+        members => ['unix:/var/run/comp-api.sock']
     }
 
     nginx::resource::location { 'api':
@@ -60,7 +60,7 @@ node "srcomp" {
     }
 
     nginx::resource::upstream { 'scorer':
-        members => ['localhost:1101']
+        members => ['unix:/var/run/comp-scorer.sock']
     }
 
     nginx::resource::location { 'scorer':

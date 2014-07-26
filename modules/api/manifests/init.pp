@@ -1,7 +1,7 @@
 class api($root,
           $user,
-          $port,
-          $port_scorer,
+          $socket_api,
+          $socket_scorer,
           $state_path) {
 
     vcsrepo { "$root/srcomp-http":

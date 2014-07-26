@@ -18,7 +18,7 @@ start() {
     fi
     echo 'Starting scorer' >&2
     cd <%= @root %>/srcomp-scorer
-    gunicorn -c /etc/comp-api-wsgi -b '[::1]:<%= @port_scorer %>' -p $PIDFILE -u $RUNAS -D app:app
+    gunicorn -c /etc/comp-api-wsgi -b 'unix:<%= @socket_scorer %>' -p $PIDFILE -u $RUNAS -D app:app
     echo 'Started!' >&2
 }
 
