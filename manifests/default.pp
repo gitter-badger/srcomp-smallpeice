@@ -24,13 +24,23 @@ node "srcomp" {
         user     => 'competition',
         revision => extlookup('repo_state_branch'),
         require  => User['competition']
-    } ~>
+    }
+
     class { 'api':
         user    => 'competition',
         root    => '/home/competition',
         socket_api    => '/var/run/comp-api.sock',
         socket_scorer => '/var/run/comp-scorer.sock',
-        state_path => '/home/competition/state'
+        state_path => '/home/competition/state',
+        subscribe  => VCSRepo['/home/competition/state']
+    }
+
+    augeas { 'set git details':
+        lens => 'Puppet.lns',
+        incl => '/home/competition/state/.git/config',
+        changes => ['set user/name "Competition State"',
+                    'set user/email "competition"'],
+        require => VCSRepo['/home/competition/state']
     }
 
     vcsrepo { "/home/competition/srcomp-screens":
