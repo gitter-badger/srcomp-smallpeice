@@ -19,6 +19,17 @@ class api($root,
         revision => extlookup('repo_scorer_branch')
     }
 
+    file { "$root/.gitconfig":
+        ensure  => file,
+        source  => 'puppet:///modules/api/gitconfig',
+        owner   => $user
+    }
+
+    file { "/root/.gitconfig":
+        ensure  => file,
+        source  => 'puppet:///modules/api/gitconfig'
+    }
+
     package { ['python-flask',
                'python-dateutil',
                'python-nose',
