@@ -66,11 +66,6 @@ node "srcomp" {
         members => ['unix:/var/run/comp-api.sock']
     }
 
-    Nginx::Resource::Location {
-        proxy_cache => 'd2',
-        proxy_cache_valid => '5m'
-    }
-
     nginx::resource::location { 'api':
         vhost => $vhost,
         proxy => 'http://api/',
