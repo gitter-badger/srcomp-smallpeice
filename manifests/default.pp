@@ -44,7 +44,7 @@ node "srcomp" {
     }
 
     vcsrepo { "/home/competition/srcomp-screens":
-        ensure   => present,
+        ensure   => latest,
         source   => extlookup('repo_screens_uri'),
         user     => 'competition',
         revision => extlookup('repo_screens_branch'),

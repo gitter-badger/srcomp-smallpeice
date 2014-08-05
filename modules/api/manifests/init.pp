@@ -5,7 +5,7 @@ class api($root,
           $state_path) {
 
     vcsrepo { "$root/srcomp-http":
-        ensure   => present,
+        ensure   => latest,
         source   => extlookup('repo_http_uri'),
         user     => $user,
         revision => extlookup('repo_http_branch'),
@@ -13,7 +13,7 @@ class api($root,
     }
 
     vcsrepo { "$root/srcomp-scorer":
-        ensure   => present,
+        ensure   => latest,
         source   => extlookup('repo_scorer_uri'),
         user     => $user,
         revision => extlookup('repo_scorer_branch')
