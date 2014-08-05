@@ -8,8 +8,7 @@ class api($root,
         ensure   => latest,
         source   => extlookup('repo_http_uri'),
         user     => $user,
-        revision => extlookup('repo_http_branch'),
-        before   => Service['comp-api']
+        revision => extlookup('repo_http_branch')
     }
 
     vcsrepo { "$root/srcomp-scorer":
@@ -26,36 +25,38 @@ class api($root,
                'python-simplejson',
                'gunicorn']:
         ensure => latest,
-        before => Service['comp-api']
+        notify => [Service['comp-api'], Service['comp-scorer']]
     }
 
     file { '/etc/init.d/comp-api':
         ensure  => file,
         content => template('api/init.erb'),
-        mode    => '0755',
-        before  => Service['comp-api']
+        mode    => '0755'
     }
 
     file { '/etc/init.d/comp-scorer':
         ensure  => file,
         content => template('api/init_scorer.erb'),
-        mode    => '0755',
-        before  => Service['comp-scorer']
+        mode    => '0755'
     }
 
     file { '/etc/comp-api-wsgi':
         ensure  => file,
-        content => template('api/wsgi_config.erb'),
-        before  => Service['comp-api']
+        content => template('api/wsgi_config.erb')
     }
 
     service { 'comp-api':
-        ensure  => running
+        ensure  => running,
+        subscribe => [File['/etc/comp-api-wsgi'],
+                      File['/etc/init.d/comp-api'],
+                      VCSRepo["$root/srcomp-http"]]
     }
 
     service { 'comp-scorer':
-        ensure  => running,
-        require => Service['comp-api']
+        ensure    => running,
+        subscribe => [File['/etc/comp-api-wsgi'],
+                      File['/etc/init.d/comp-scorer'],
+                      VCSRepo["$root/srcomp-scorer"]]
     }
 }
 
