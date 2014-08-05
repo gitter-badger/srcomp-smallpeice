@@ -7,7 +7,6 @@ node "srcomp" {
     }
 
     VCSRepo {
-        require => Package['git'],
         provider => git
     }
 
