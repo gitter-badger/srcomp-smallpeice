@@ -18,45 +18,55 @@ class api($root,
         revision => extlookup('repo_scorer_branch')
     }
 
-    package { ['python-flask',
-               'python-dateutil',
-               'python-nose',
-               'python-yaml',
-               'python-simplejson',
-               'gunicorn']:
-        ensure => latest,
-        notify => [Service['comp-api'], Service['comp-scorer']]
+    class { 'python':
+        pip        => true,
+        dev        => true,
+        virtualenv => true,
+        gunicorn   => true
     }
 
-    file { '/etc/init.d/comp-api':
-        ensure  => file,
-        content => template('api/init.erb'),
-        mode    => '0755'
+    $venv = "$root/comp-venv"
+
+    python::virtualenv { $venv:
+        owner      => $user,
+        systempkgs => true # to get at gunicorn
     }
 
-    file { '/etc/init.d/comp-scorer':
-        ensure  => file,
-        content => template('api/init_scorer.erb'),
-        mode    => '0755'
+    python::pip { ['flask',
+                   'python-dateutil',
+                   'nose',
+                   'pyyaml',
+                   'simplejson']:
+        ensure     => latest,
+        virtualenv => $venv,
+        owner      => $user
     }
 
-    file { '/etc/comp-api-wsgi':
+    file { '/etc/comp-wsgi':
         ensure  => file,
+        mode    => '0644',
         content => template('api/wsgi_config.erb')
     }
 
-    service { 'comp-api':
-        ensure  => running,
-        subscribe => [File['/etc/comp-api-wsgi'],
-                      File['/etc/init.d/comp-api'],
-                      VCSRepo["$root/srcomp-http"]]
+    Python::Gunicorn {
+        owner      => $user,
+        virtualenv => $venv,
+        template   => 'api/gunicorn.erb',
+        subscribe  => File['/etc/comp-wsgi']
     }
 
-    service { 'comp-scorer':
-        ensure    => running,
-        subscribe => [File['/etc/comp-api-wsgi'],
-                      File['/etc/init.d/comp-scorer'],
-                      VCSRepo["$root/srcomp-scorer"]]
+    python::gunicorn { 'comp-api':
+        dir         => "$root/srcomp-http",
+        bind        => "unix:$socket_api",
+        subscribe   => VCSRepo["$root/srcomp-http"],
+        environment => {'COMPSTATE' => $state_path}
+    }
+
+    python::gunicorn { 'comp-scorer':
+        dir         => "$root/srcomp-scorer",
+        bind        => "unix:$socket_scorer",
+        subscribe   => VCSRepo["$root/srcomp-scorer"],
+        environment => {'COMPSTATE' => $state_path}
     }
 }
 
