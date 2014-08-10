@@ -1,9 +1,9 @@
-repo_state_uri,https://github.com/prophile/smallpeice-comp-state.git
+repo_state_uri,git://git.studentrobotics.org/comp/sr2014-comp.git
 repo_state_branch,master
 repo_screens_uri,git://git.studentrobotics.org/comp/srcomp-screens.git
 repo_screens_branch,master
-repo_http_uri,https://github.com/prophile/srcomp-http.git
-repo_http_branch,smallpeice-2014
-repo_scorer_uri,https://github.com/prophile/srcomp-scorer.git
-repo_scorer_branch,smallpeice-2014
+repo_http_uri,git://git.studentrobotics.org/comp/srcomp-http.git
+repo_http_branch,master
+repo_scorer_uri,git://git.studentrobotics.org/comp/srcomp-scorer.git
+repo_scorer_branch,master
 
